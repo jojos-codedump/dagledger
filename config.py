@@ -7,10 +7,10 @@ API_PORT  = int(os.getenv("API_PORT", "8000"))
 SECRET_KEY = os.getenv("SECRET_KEY", "00" * 32)
 
 ALL_NODES = [
-    {"id": "node1", "ip": "192.168.1.101", "port": 9001},
-    {"id": "node2", "ip": "192.168.1.102", "port": 9001},
-    {"id": "node3", "ip": "192.168.1.103", "port": 9001},
-    {"id": "node4", "ip": "192.168.1.104", "port": 9001},
+    {"id": "node1", "ip": "dagnode1.local", "port": 9001},
+    {"id": "node2", "ip": "dagnode2.local", "port": 9001},
+    {"id": "node3", "ip": "dagnode3.local", "port": 9001},
+    {"id": "node4", "ip": "dagnode4.local", "port": 9001},
 ]
 
 PEERS = [n for n in ALL_NODES if n["id"] != NODE_ID]
