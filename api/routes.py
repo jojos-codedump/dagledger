@@ -23,8 +23,8 @@ async def create_tx(request: Request, tx_in: dict):
             signature = tx_in["signature"],
             tx_id     = tx_in["tx_id"],
         )
-    except KeyError as e:
-        raise HTTPException(status_code=400, detail=f"Missing field: {e}")
+    except (KeyError, ValueError) as e:
+        raise HTTPException(status_code=400, detail=f"Invalid payload construction: {e}")
         
     accepted, reason = await ingest_transaction(tx, state, secret_key=config.SECRET_KEY)
     if not accepted:

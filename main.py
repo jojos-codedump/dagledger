@@ -43,6 +43,20 @@ async def lifespan(app: FastAPI):
         for peer in config.PEERS
     ]
 
+    async def _periodic_sync(state):
+        from network.gossip import send_framed_message
+        while True:
+            await asyncio.sleep(config.SYNC_INTERVAL_SECONDS)
+            for peer in state.peers:
+                if peer.connected and peer.writer:
+                    all_ids = state.dag.get_all_ids()
+                    await send_framed_message(
+                        peer.writer,
+                        {"type": "SYNC_REQ", "known_ids": all_ids}
+                    )
+                    
+    sync_task = asyncio.create_task(_periodic_sync(state))
+
     yield
 
     # === SHUTDOWN ===

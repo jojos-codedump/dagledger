@@ -26,13 +26,11 @@ async def ingest_transaction(tx: Transaction, state, exclude_node_id: str = "", 
     state.seen_ids.add(tx.tx_id)
     state.dag.add_transaction(tx)
 
-    for parent_id in tx.parents:
-        if parent_id and parent_id not in state.applied_tx_ids:
-            if parent_id in state.dag.transactions:
-                if is_confirmed(state.dag, parent_id):
-                    parent_tx = state.dag.transactions[parent_id]
-                    apply_transaction(parent_tx, state.balance_cache)
-                    state.applied_tx_ids.add(parent_id)
+    for unapplied_id in list(state.dag.transactions.keys() - state.applied_tx_ids):
+        if is_confirmed(state.dag, unapplied_id):
+            unapplied_tx = state.dag.transactions[unapplied_id]
+            apply_transaction(unapplied_tx, state.balance_cache)
+            state.applied_tx_ids.add(unapplied_id)
 
     from network.gossip import broadcast
     asyncio.create_task(broadcast({"type": "NEW_TX", "tx": to_dict(tx)}, exclude_node_id, state))
